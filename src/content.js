@@ -92,18 +92,43 @@ function buildLoadingElement(issueKey) {
 
 function statusIconBlock(statusIcon) {
     if (!statusIcon) {
-        return ''
+        return '';
     }
 
-    const origin = new URL(statusIcon).origin
-    const base = new URL(origin).href
+    const url = new URL(statusIcon);
+    const origin = url.origin;
+    const pathname = url.pathname;
+
+    const extension = pathname.split('.').pop().toLowerCase();
 
     // If the icon is the same as its origin, it most probably is not an image
-    if (statusIcon === origin || statusIcon === base) {
-        return ''
+    if (statusIcon === origin || statusIcon === pathname) {
+        return '';
     }
 
-    return `<img height="16" class="octicon" width="12" aria-hidden="true" src="${statusIcon}"/>`
+    const supportedImageTypes = {
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        gif: 'image/gif',
+        bmp: 'image/bmp',
+    };
+    if (!supportedImageTypes.hasOwnProperty(extension)) {
+        return '';
+    }
+
+    const imageType = supportedImageTypes[extension];
+
+    return `
+        <object
+            data="${statusIcon}"
+            type="${imageType}"
+            height="16"
+            width="12"
+            aria-hidden="true"
+            style="vertical-align: text-bottom;"
+        ></object>
+    `;
 }
 
 function statusCategoryColors(statusCategory) {
